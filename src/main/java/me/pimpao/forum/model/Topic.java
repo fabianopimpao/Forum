@@ -1,19 +1,34 @@
 package me.pimpao.forum.model;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class Topic {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
+
     private String message;
+
     private LocalDateTime creationDate = LocalDateTime.now();
+
+    @Enumerated(value = EnumType.STRING)
     private TopicStatus status = TopicStatus.NOT_RESPONDED;
-    private User user;
+
+    @ManyToOne
+    private User author;
+
+    @ManyToOne
     private Course course;
+
+    @OneToMany(mappedBy = "topic")
     private List<Response> responses = new ArrayList<>();
 
     public Topic(String title, String message, Course course) {
@@ -62,12 +77,12 @@ public class Topic {
         this.status = status;
     }
 
-    public User getUser() {
-        return user;
+    public User getAuthor() {
+        return author;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public Course getCourse() {
