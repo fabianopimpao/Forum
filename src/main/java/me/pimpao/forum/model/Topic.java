@@ -31,6 +31,14 @@ public class Topic {
     @OneToMany(mappedBy = "topic")
     private List<Response> responses = new ArrayList<>();
 
+    public Topic() {
+
+    }
+
+    public Topic(String title, String message, Course course) {
+
+    }
+
     public Long getId() {
         return id;
     }
