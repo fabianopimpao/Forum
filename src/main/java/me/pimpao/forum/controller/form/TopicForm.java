@@ -4,10 +4,25 @@ import me.pimpao.forum.model.Course;
 import me.pimpao.forum.model.Topic;
 import me.pimpao.forum.repository.CourseRepository;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class TopicForm {
 
+    @NotNull
+    @NotEmpty
+    @Size(min = 5)
     private String title;
+
+    @NotNull
+    @NotEmpty
+    @Size(min = 10)
     private String message;
+
+    @NotNull
+    @NotEmpty
+    @Size(min = 5)
     private String courseName;
 
     public String getTitle() {
@@ -36,6 +51,6 @@ public class TopicForm {
 
     public Topic converter(CourseRepository courseRepository) {
         Course course = courseRepository.findByName(courseName);
-        return new Topic(title, message, course);
+        return new Topic(this.title, this.message, course);
     }
 }

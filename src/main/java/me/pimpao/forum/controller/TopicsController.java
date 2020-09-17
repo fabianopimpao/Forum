@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class TopicsController {
     }
 
     @PostMapping
-    public ResponseEntity<TopicDto> create(@RequestBody TopicForm form, UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<TopicDto> create(@Valid @RequestBody TopicForm form, UriComponentsBuilder uriComponentsBuilder) {
         Topic topic = form.converter(courseRepository);
         topic = topicRepository.save(topic);
         URI uri = uriComponentsBuilder.path("/topics/{id}").buildAndExpand(topic.getId()).toUri();

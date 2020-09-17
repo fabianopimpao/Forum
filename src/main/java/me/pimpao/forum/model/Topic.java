@@ -36,7 +36,9 @@ public class Topic {
     }
 
     public Topic(String title, String message, Course course) {
-
+        this.title = title;
+        this.message = message;
+        this.course = course;
     }
 
     public Long getId() {
