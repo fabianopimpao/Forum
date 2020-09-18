@@ -1,7 +1,9 @@
 package me.pimpao.forum.controller;
 
+import me.pimpao.forum.controller.dto.TopicDetailDto;
 import me.pimpao.forum.controller.dto.TopicDto;
 import me.pimpao.forum.controller.form.TopicForm;
+import me.pimpao.forum.controller.form.TopicUpdateForm;
 import me.pimpao.forum.model.Topic;
 import me.pimpao.forum.repository.CourseRepository;
 import me.pimpao.forum.repository.TopicRepository;
@@ -42,6 +44,18 @@ public class TopicsController {
         URI uri = uriComponentsBuilder.path("/topics/{id}").buildAndExpand(topic.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new TopicDto(topic));
+    }
+
+    @GetMapping("/{id}")
+    public TopicDetailDto find(@PathVariable Long id) {
+        Topic topic = topicRepository.getOne(id);
+        return new TopicDetailDto(topic);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TopicDto> update(@PathVariable Long id, @RequestBody TopicUpdateForm topicUpdateForm) {
+        Topic topic = topicUpdateForm.update(id, topicRepository);
+        return ResponseEntity.ok(new TopicDto(topic));
     }
 
 }
