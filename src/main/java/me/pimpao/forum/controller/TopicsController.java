@@ -4,6 +4,7 @@ import me.pimpao.forum.controller.dto.TopicDetailDto;
 import me.pimpao.forum.controller.dto.TopicDto;
 import me.pimpao.forum.controller.form.TopicForm;
 import me.pimpao.forum.controller.form.TopicUpdateForm;
+import me.pimpao.forum.model.Response;
 import me.pimpao.forum.model.Topic;
 import me.pimpao.forum.repository.CourseRepository;
 import me.pimpao.forum.repository.TopicRepository;
@@ -16,6 +17,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topics")
@@ -49,23 +51,35 @@ public class TopicsController {
     }
 
     @GetMapping("/{id}")
-    public TopicDetailDto find(@PathVariable Long id) {
-        Topic topic = topicRepository.getOne(id);
-        return new TopicDetailDto(topic);
+    public ResponseEntity<TopicDetailDto> find(@PathVariable Long id) {
+        Optional<Topic> topic = topicRepository.findById(id);
+        if (topic.isPresent()) {
+            return ResponseEntity.ok(new TopicDetailDto(topic.get()));
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
     @Transactional
     public ResponseEntity<TopicDto> update(@PathVariable Long id, @RequestBody TopicUpdateForm topicUpdateForm) {
-        Topic topic = topicUpdateForm.update(id, topicRepository);
-        return ResponseEntity.ok(new TopicDto(topic));
+        Optional<Topic> optional = topicRepository.findById(id);
+        if (optional.isPresent()) {
+            Topic topic = topicUpdateForm.update(id, topicRepository);
+            return ResponseEntity.ok(new TopicDto(topic));
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        topicRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        Optional<Topic> topic = topicRepository.findById(id);
+        if (topic.isPresent()) {
+            topicRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
 }
