@@ -4,11 +4,14 @@ import me.pimpao.forum.controller.dto.TopicDetailDto;
 import me.pimpao.forum.controller.dto.TopicDto;
 import me.pimpao.forum.controller.form.TopicForm;
 import me.pimpao.forum.controller.form.TopicUpdateForm;
-import me.pimpao.forum.model.Response;
 import me.pimpao.forum.model.Topic;
 import me.pimpao.forum.repository.CourseRepository;
 import me.pimpao.forum.repository.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -16,7 +19,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,12 +32,19 @@ public class TopicsController {
     private CourseRepository courseRepository;
 
     @GetMapping
-    public List<TopicDto> listaAll(String courseName) {
+    public Page<TopicDto> listaAll(@RequestParam(required = false) String courseName,
+                                   @RequestParam int page,
+                                   @RequestParam int size,
+                                   @RequestParam(required = false) String order) {
+
+        Pageable pagination = PageRequest.of(page, size, Sort.Direction.ASC, order);
+
+        Page<Topic> topics;
         if (courseName == null) {
-            List<Topic> topics = topicRepository.findAll();
+            topics = topicRepository.findAll(pagination);
             return TopicDto.converter(topics);
         } else {
-            List<Topic> topics = topicRepository.findByCourseName(courseName);
+            topics = topicRepository.findByCourseName(courseName, pagination);
             return TopicDto.converter(topics);
         }
     }
