@@ -8,10 +8,11 @@ import me.pimpao.forum.model.Topic;
 import me.pimpao.forum.repository.CourseRepository;
 import me.pimpao.forum.repository.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,20 +34,16 @@ public class TopicsController {
 
     @GetMapping
     public Page<TopicDto> listaAll(@RequestParam(required = false) String courseName,
-                                   @RequestParam int page,
-                                   @RequestParam int size,
-                                   @RequestParam(required = false) String order) {
-
-        Pageable pagination = PageRequest.of(page, size, Sort.Direction.ASC, order);
+                                   @PageableDefault(sort = "id", direction = Sort.Direction.ASC, page = 0, size = 10) Pageable pagination) {
 
         Page<Topic> topics;
         if (courseName == null) {
             topics = topicRepository.findAll(pagination);
-            return TopicDto.converter(topics);
         } else {
             topics = topicRepository.findByCourseName(courseName, pagination);
-            return TopicDto.converter(topics);
         }
+        
+        return TopicDto.converter(topics);
     }
 
     @PostMapping
