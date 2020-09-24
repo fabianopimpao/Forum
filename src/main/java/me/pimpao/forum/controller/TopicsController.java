@@ -9,6 +9,7 @@ import me.pimpao.forum.repository.CourseRepository;
 import me.pimpao.forum.repository.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -33,6 +34,7 @@ public class TopicsController {
     private CourseRepository courseRepository;
 
     @GetMapping
+    @Cacheable(value = "topicsList")
     public Page<TopicDto> listaAll(@RequestParam(required = false) String courseName,
                                    @PageableDefault(sort = "id", direction = Sort.Direction.ASC, page = 0, size = 10) Pageable pagination) {
 
@@ -42,7 +44,7 @@ public class TopicsController {
         } else {
             topics = topicRepository.findByCourseName(courseName, pagination);
         }
-        
+
         return TopicDto.converter(topics);
     }
 
