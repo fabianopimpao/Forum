@@ -1,5 +1,7 @@
 package me.pimpao.forum.controller.form;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 public class LoginForm {
 
     private String email;
@@ -19,5 +21,9 @@ public class LoginForm {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public UsernamePasswordAuthenticationToken converter() {
+        return new UsernamePasswordAuthenticationToken(email, password);
     }
 }
