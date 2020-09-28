@@ -37,6 +37,6 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.ok(new TokenDto(token, "Bearer"));
+        return ResponseEntity.ok(new TokenDto(token, "Bearer")) ;
     }
 }
