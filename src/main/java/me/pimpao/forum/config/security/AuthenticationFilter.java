@@ -1,6 +1,9 @@
 package me.pimpao.forum.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import me.pimpao.forum.model.User;
+import me.pimpao.forum.repository.UserRepository;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -13,15 +16,22 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
    private TokenService tokenService;
 
-    public AuthenticationFilter(TokenService tokenService) {
+   private UserRepository userRepository;
+
+    public AuthenticationFilter(TokenService tokenService, UserRepository userRepository) {
         this.tokenService = tokenService;
+        this.userRepository = userRepository;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = recoverToken(request);
         boolean valid = tokenService.isTokenValid(token);
-        System.out.println(valid);
+        if (valid) {
+            userAuthenticate(token);
+        }
+
+        filterChain.doFilter(request, response);
     }
 
     private String recoverToken(HttpServletRequest request) {
@@ -31,5 +41,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
 
         return token.substring(7, token.length());
+    }
+
+    private void userAuthenticate(String token) {
+        Long userId = tokenService.getUserId(token);
+        User user = userRepository.findById(userId).get();
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

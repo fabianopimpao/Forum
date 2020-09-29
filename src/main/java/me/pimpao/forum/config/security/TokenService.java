@@ -1,5 +1,6 @@
 package me.pimpao.forum.config.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import me.pimpao.forum.model.User;
@@ -38,5 +39,10 @@ public class TokenService {
         } catch (Exception ex) {
             return false;
         }
+    }
+
+    public Long getUserId(String token) {
+        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Long.parseLong(claims.getSubject());
     }
 }
